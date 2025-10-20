@@ -29,7 +29,7 @@ enum WallpaperType: String, CaseIterable {
         case .solid: return "square.fill"
         case .linear: return "rectangle.fill"
         case .radial: return "circle.fill"
-        case .twisted: return "spiral"
+        case .twisted: return "line.3.crossed.swirl.circle"
         case .bilinear: return "square.grid.4x3.fill"
         case .plasma: return "waveform"
         case .blurred: return "cloud.fill"
@@ -488,7 +488,7 @@ struct ContentView: View {
                 mainPanelView
             }
         }
-        .frame(minWidth: 800, minHeight: 600)
+        .frame(minWidth: 900, minHeight: 650)
         .background(Color(NSColor.windowBackgroundColor))
         .sheet(isPresented: $showingPreview) {
             WallpaperPreviewView(wallpaperGenerator: wallpaperGenerator)
@@ -496,91 +496,129 @@ struct ContentView: View {
     }
     
     private var headerView: some View {
-        VStack(spacing: 12) {
-            HStack {
+        HStack {
+            HStack(spacing: 12) {
                 Image(systemName: "paintbrush.pointed.fill")
                     .font(.title2)
                     .foregroundColor(.blue)
                 
-                Text("Canvas")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                Button("Preview") {
-                    showingPreview = true
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Canvas")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    
+                    Text("Create beautiful gradient wallpapers")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(wallpaperGenerator.currentWallpaper == nil)
             }
             
-            Text("Create beautiful gradient wallpapers")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            Spacer()
+            
+            Button("Preview") {
+                showingPreview = true
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(wallpaperGenerator.currentWallpaper == nil)
         }
-        .padding(24)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
         .background(Color(NSColor.controlBackgroundColor))
+        .shadow(color: Color.primary.opacity(0.1), radius: 8, x: 0, y: 4)
     }
     
     private var sidebarView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Wallpaper Type")
-                .font(.headline)
-                .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header
+            VStack(alignment: .leading) {
+                Text("Wallpaper Type")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
             
-            ForEach(WallpaperType.allCases, id: \.self) { type in
-                Button(action: {
-                    selectedType = type
-                    wallpaperGenerator.selectedType = type
-                }) {
-                    HStack {
-                        Image(systemName: type.icon)
-                            .foregroundColor(selectedType == type ? .white : .blue)
-                        Text(type.displayName)
-                            .foregroundColor(selectedType == type ? .white : .primary)
-                        Spacer()
+            // Scrollable content
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 8) {
+                    ForEach(WallpaperType.allCases, id: \.self) { type in
+                        Button(action: {
+                            selectedType = type
+                            wallpaperGenerator.selectedType = type
+                        }) {
+                            HStack(spacing: 12) {
+                                Image(systemName: type.icon)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(selectedType == type ? .white : .blue)
+                                    .frame(width: 20, alignment: .leading)
+                                
+                                Text(type.displayName)
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(selectedType == type ? .white : .primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(selectedType == type ? Color.blue : Color.clear)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                            )
+                            .shadow(color: Color.primary.opacity(selectedType == type ? 0.2 : 0.08), radius: selectedType == type ? 6 : 3, x: 0, y: selectedType == type ? 3 : 1)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(selectedType == type ? Color.blue : Color.clear)
-                    )
                 }
-                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
             }
             
             Spacer()
             
-            Button("Generate Wallpaper") {
-                wallpaperGenerator.generateWallpaper()
+            // Generate button
+            VStack(alignment: .leading) {
+                Button("Generate Wallpaper") {
+                    wallpaperGenerator.generateWallpaper()
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(wallpaperGenerator.isGenerating)
+                .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(wallpaperGenerator.isGenerating)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
         }
-        .padding(20)
-        .frame(width: 250)
-        .background(Color(NSColor.controlBackgroundColor))
+        .frame(width: 280)
+        .background(.ultraThinMaterial, in: Rectangle())
+        .shadow(color: Color.primary.opacity(0.08), radius: 8, x: 0, y: 3)
     }
     
     private var mainPanelView: some View {
-        VStack(spacing: 20) {
-            colorConfigurationView
-            additionalOptionsView
-            Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                colorConfigurationView
+                additionalOptionsView
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(20)
         }
-        .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
     
     private var colorConfigurationView: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Colors")
                 .font(.headline)
                 .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
             ColorPickerView(
                 wallpaperType: selectedType,
@@ -589,39 +627,58 @@ struct ContentView: View {
                 blur: $wallpaperGenerator.blur,
                 twist: $wallpaperGenerator.twist
             )
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 10)
                 .fill(Color(NSColor.controlBackgroundColor))
         )
+        .shadow(color: Color.primary.opacity(0.08), radius: 6, x: 0, y: 2)
     }
     
     private var additionalOptionsView: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Options")
                 .font(.headline)
                 .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
-            HStack {
-                Text("Size:")
-                Picker("Size", selection: $wallpaperGenerator.size) {
-                    Text("1366x768").tag("1366x768")
-                    Text("1920x1080").tag("1920x1080")
-                    Text("2560x1440").tag("2560x1440")
-                    Text("3840x2160").tag("3840x2160")
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Size:")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Picker("Size", selection: $wallpaperGenerator.size) {
+                        Text("1366x768").tag("1366x768")
+                        Text("1920x1080").tag("1920x1080")
+                        Text("2560x1440").tag("2560x1440")
+                        Text("3840x2160").tag("3840x2160")
+                    }
+                    .pickerStyle(.menu)
+                    .frame(width: 120)
                 }
-                .pickerStyle(.menu)
+                
+                HStack {
+                    Text("Set as Desktop Wallpaper")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Toggle("", isOn: $wallpaperGenerator.setAsWallpaper)
+                        .toggleStyle(.switch)
+                }
             }
-            
-            Toggle("Set as Desktop Wallpaper", isOn: $wallpaperGenerator.setAsWallpaper)
-                .toggleStyle(.switch)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 10)
                 .fill(Color(NSColor.controlBackgroundColor))
         )
+        .shadow(color: Color.primary.opacity(0.08), radius: 6, x: 0, y: 2)
     }
 }
 

@@ -1,0 +1,236 @@
+#!/bin/bash
+
+# Simple Canvas Script for macOS
+DIR="$HOME/Pictures/Canvas"
+size="1366x768"
+name="Canvas_$(date +%Y-%m-%d_%I-%M-%S).png"
+
+# Create directory if it doesn't exist
+mkdir -p "$DIR"
+
+# Check for ImageMagick
+if ! command -v convert &> /dev/null; then
+    echo "Error: ImageMagick not found. Please install with: brew install imagemagick"
+    exit 1
+fi
+
+# Simple argument parsing
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -s|--solid)
+            SOLID="true"
+            shift
+            ;;
+        -l|--linear)
+            LINEAR="true"
+            shift
+            ;;
+        -r|--radial)
+            RADIAL="true"
+            shift
+            ;;
+        -t|--twisted)
+            TWISTED="true"
+            shift
+            ;;
+        -b|--bilinear)
+            BILINEAR="true"
+            shift
+            ;;
+        -p|--plasma)
+            PLASMA="true"
+            shift
+            ;;
+        -B|--blurred)
+            BLURRED="true"
+            shift
+            ;;
+        -R|--randomize)
+            RANDOMIZE="true"
+            shift
+            ;;
+        -S|--size)
+            size="$2"
+            shift 2
+            ;;
+        -a|--autobg)
+            AUTOBG="true"
+            shift
+            ;;
+        -n|--no-preview)
+            NOFEH="true"
+            shift
+            ;;
+        -h|--help)
+            echo "Canvas - Simple Wallpaper Generator"
+            echo "Usage: $0 [options]"
+            echo "Options:"
+            echo "  -s, --solid      Generate solid color wallpaper"
+            echo "  -l, --linear     Generate linear gradient wallpaper"
+            echo "  -r, --radial     Generate radial gradient wallpaper"
+            echo "  -t, --twisted    Generate twisted gradient wallpaper"
+            echo "  -b, --bilinear   Generate bilinear gradient wallpaper"
+            echo "  -p, --plasma     Generate plasma wallpaper"
+            echo "  -B, --blurred    Generate blurred noise wallpaper"
+            echo "  -R, --randomize  Generate random wallpaper"
+            echo "  -S, --size       Set wallpaper size (default: 1366x768)"
+            echo "  -a, --autobg     Set as desktop wallpaper"
+            echo "  -n, --no-preview Don't show preview"
+            echo "  -h, --help       Show this help"
+            exit 0
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+# Set wallpaper function for macOS
+set_macos() {
+    osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$1\""
+}
+
+# Generate solid color wallpaper
+generate_solid() {
+    local color="$1"
+    convert -size "$size" canvas:"$color" "$DIR/$name"
+    echo "Generated solid color wallpaper: $DIR/$name"
+}
+
+# Generate linear gradient wallpaper
+generate_linear() {
+    local color1="$1"
+    local color2="$2"
+    local angle="${3:-0}"
+    convert -size "$size" -define gradient:angle="$angle" gradient:"$color1-$color2" "$DIR/$name"
+    echo "Generated linear gradient wallpaper: $DIR/$name"
+}
+
+# Generate radial gradient wallpaper
+generate_radial() {
+    local color1="$1"
+    local color2="$2"
+    convert -size "$size" radial-gradient:"$color1-$color2" "$DIR/$name"
+    echo "Generated radial gradient wallpaper: $DIR/$name"
+}
+
+# Generate twisted gradient wallpaper
+generate_twisted() {
+    local color1="$1"
+    local color2="$2"
+    local twist="${3:-150}"
+    convert -size "$size" gradient:"$color1-$color2" -swirl "$twist" "$DIR/$name"
+    echo "Generated twisted gradient wallpaper: $DIR/$name"
+}
+
+# Generate bilinear gradient wallpaper
+generate_bilinear() {
+    local color1="$1"
+    local color2="$2"
+    local color3="$3"
+    local color4="$4"
+    convert \( xc:"$color1" xc:"$color2" +append \) \( xc:"$color3" xc:"$color4" +append \) -append -filter triangle -resize "$size"\! "$DIR/$name"
+    echo "Generated bilinear gradient wallpaper: $DIR/$name"
+}
+
+# Generate plasma wallpaper
+generate_plasma() {
+    convert -size "$size" plasma: "$DIR/$name"
+    echo "Generated plasma wallpaper: $DIR/$name"
+}
+
+# Generate blurred noise wallpaper
+generate_blurred() {
+    local blur="${1:-14}"
+    convert -size "100x56" xc: +noise Random "/tmp/noise.png"
+    convert "/tmp/noise.png" -virtual-pixel tile -blur 0x"$blur" -auto-level -resize "$size" "$DIR/$name"
+    rm -f "/tmp/noise.png"
+    echo "Generated blurred noise wallpaper: $DIR/$name"
+}
+
+# Generate random wallpaper
+generate_random() {
+    local types=("solid" "linear" "radial" "twisted" "plasma" "blurred")
+    local random_type=${types[$RANDOM % ${#types[@]}]}
+    
+    case $random_type in
+        "solid")
+            local colors=("red" "blue" "green" "purple" "orange" "yellow" "pink" "cyan")
+            local color=${colors[$RANDOM % ${#colors[@]}]}
+            generate_solid "$color"
+            ;;
+        "linear")
+            local colors=("red" "blue" "green" "purple" "orange" "yellow" "pink" "cyan")
+            local color1=${colors[$RANDOM % ${#colors[@]}]}
+            local color2=${colors[$RANDOM % ${#colors[@]}]}
+            generate_linear "$color1" "$color2" $((RANDOM % 360))
+            ;;
+        "radial")
+            local colors=("red" "blue" "green" "purple" "orange" "yellow" "pink" "cyan")
+            local color1=${colors[$RANDOM % ${#colors[@]}]}
+            local color2=${colors[$RANDOM % ${#colors[@]}]}
+            generate_radial "$color1" "$color2"
+            ;;
+        "twisted")
+            local colors=("red" "blue" "green" "purple" "orange" "yellow" "pink" "cyan")
+            local color1=${colors[$RANDOM % ${#colors[@]}]}
+            local color2=${colors[$RANDOM % ${#colors[@]}]}
+            generate_twisted "$color1" "$color2" $((RANDOM % 500))
+            ;;
+        "plasma")
+            generate_plasma
+            ;;
+        "blurred")
+            generate_blurred $((RANDOM % 30 + 1))
+            ;;
+    esac
+}
+
+# Main execution
+if [[ "$SOLID" == "true" ]]; then
+    read -p "Enter color (hex like #FF0000 or name like red): " color
+    generate_solid "$color"
+elif [[ "$LINEAR" == "true" ]]; then
+    read -p "Enter first color: " color1
+    read -p "Enter second color: " color2
+    read -p "Enter angle (0-360, default 0): " angle
+    generate_linear "$color1" "$color2" "${angle:-0}"
+elif [[ "$RADIAL" == "true" ]]; then
+    read -p "Enter first color: " color1
+    read -p "Enter second color: " color2
+    generate_radial "$color1" "$color2"
+elif [[ "$TWISTED" == "true" ]]; then
+    read -p "Enter first color: " color1
+    read -p "Enter second color: " color2
+    read -p "Enter twist amount (0-500, default 150): " twist
+    generate_twisted "$color1" "$color2" "${twist:-150}"
+elif [[ "$BILINEAR" == "true" ]]; then
+    read -p "Enter first color: " color1
+    read -p "Enter second color: " color2
+    read -p "Enter third color: " color3
+    read -p "Enter fourth color: " color4
+    generate_bilinear "$color1" "$color2" "$color3" "$color4"
+elif [[ "$PLASMA" == "true" ]]; then
+    generate_plasma
+elif [[ "$BLURRED" == "true" ]]; then
+    read -p "Enter blur strength (1-30, default 14): " blur
+    generate_blurred "${blur:-14}"
+elif [[ "$RANDOMIZE" == "true" ]]; then
+    generate_random
+else
+    echo "Canvas - Simple Wallpaper Generator"
+    echo "Usage: $0 [options]"
+    echo "Use -h or --help for more information"
+    exit 1
+fi
+
+# Set as wallpaper if requested
+if [[ "$AUTOBG" == "true" ]]; then
+    set_macos "$DIR/$name"
+    echo "Wallpaper set successfully!"
+fi
+
+# Show preview if not disabled
+if [[ "$NOFEH" != "true" ]] && [[ "$AUTOBG" != "true" ]]; then
+    open "$DIR/$name"
+fi
