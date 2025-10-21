@@ -14,6 +14,8 @@ A **macOS native app** and `bash` script to generate gradient & blurred wallpape
   <img src="canvas_ico/canvas-macOS-Dark-1024x1024@2x.png" alt="Canvas App Icon" width="128" height="128">
 </p>
 
+![Canvas App Preview](../app-preview.png)
+
 ## ✨ Features
 
 ### Wallpaper Types:
