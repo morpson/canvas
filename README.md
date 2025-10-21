@@ -6,15 +6,11 @@
   <img src="https://img.shields.io/badge/License-GPL%20v3-blue?style=for-the-badge">
 </p>
 
-A **macOS native app** and `bash` script to generate gradient & blurred wallpapers with a modern SwiftUI interface.
+<img src="canvas_ico/canvas-macOS-Dark-1024x1024@2x.png" alt="Canvas App Icon" width="80" height="80" align="left" style="margin-right: 15px; margin-bottom: 10px;"> A **macOS native app** and `bash` script to generate gradient & blurred wallpapers with a modern SwiftUI interface.
 
 > **Based on the original [Canvas](https://github.com/adi1090x/canvas) script by [Aditya Shakya (@adi1090x)](https://github.com/adi1090x)**
 
-<p align="center">
-  <img src="canvas_ico/canvas-macOS-Dark-1024x1024@2x.png" alt="Canvas App Icon" width="128" height="128">
-</p>
-
-![Canvas App Preview](../app-preview.png)
+![Canvas App Preview](app-preview.png)
 
 ## ✨ Features
 
