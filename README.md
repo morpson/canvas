@@ -1,3 +1,9 @@
+<!-- Open Graph meta tags for link previews -->
+<meta property="og:title" content="Canvas - Gradient Wallpaper Generator">
+<meta property="og:description" content="A macOS native app and bash script to generate gradient & blurred wallpapers with a modern SwiftUI interface.">
+<meta property="og:image" content="canvas_ico/canvas-macOS-Dark-1024x1024@2x.png">
+<meta property="og:type" content="website">
+
 # Canvas - Gradient Wallpaper Generator
 
 <p align="left">
