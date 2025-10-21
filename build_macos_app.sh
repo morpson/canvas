@@ -78,6 +78,10 @@ iconutil -c icns AppIcon.iconset -o Canvas.app/Contents/Resources/AppIcon.icns
 # Copy all appearance variants for macOS 26+ support
 cp canvas_ico/*.png Canvas.app/Contents/Resources/
 
+# Copy canvas-simple script to Resources
+cp canvas-simple Canvas.app/Contents/Resources/
+chmod +x Canvas.app/Contents/Resources/canvas-simple
+
 # Clean up temporary files
 rm -rf AppIcon.iconset
 

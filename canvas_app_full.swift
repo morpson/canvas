@@ -52,7 +52,11 @@ class WallpaperGenerator: ObservableObject {
     private let scriptPath: String
     
     init() {
-        self.scriptPath = "./canvas-simple"
+        if let bundlePath = Bundle.main.resourcePath {
+            self.scriptPath = bundlePath + "/canvas-simple"
+        } else {
+            self.scriptPath = "./canvas-simple"
+        }
     }
     
     func generateWallpaper() {
@@ -76,6 +80,17 @@ class WallpaperGenerator: ObservableObject {
     private func runCanvasScript() -> Bool {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/bash")
+        process.currentDirectoryURL = URL(fileURLWithPath: NSHomeDirectory())
+        
+        // Set environment variables for ImageMagick
+        var environment = ProcessInfo.processInfo.environment
+        let homebrewPath = "/opt/homebrew/bin:/usr/local/bin"
+        if let existingPath = environment["PATH"] {
+            environment["PATH"] = "\(homebrewPath):\(existingPath)"
+        } else {
+            environment["PATH"] = "\(homebrewPath):/usr/bin:/bin"
+        }
+        process.environment = environment
         
         var arguments: [String] = []
         arguments.append("-S")
@@ -112,35 +127,37 @@ class WallpaperGenerator: ObservableObject {
         switch selectedType {
         case .solid:
             if let color = colors.first {
-                let nsColor = NSColor(color)
-                input = nsColor.hexString + "\n"
+                input = color.nsColor.hexString + "\n"
             }
         case .linear:
             if colors.count >= 2 {
-                let color1 = NSColor(colors[0]).hexString
-                let color2 = NSColor(colors[1]).hexString
+                let color1 = colors[0].nsColor.hexString
+                let color2 = colors[1].nsColor.hexString
                 input = "\(color1)\n\(color2)\n\(Int(angle))\n"
             }
         case .radial:
             if colors.count >= 2 {
-                let color1 = NSColor(colors[0]).hexString
-                let color2 = NSColor(colors[1]).hexString
+                let color1 = colors[0].nsColor.hexString
+                let color2 = colors[1].nsColor.hexString
                 input = "\(color1)\n\(color2)\n"
             }
         case .twisted:
             if colors.count >= 2 {
-                let color1 = NSColor(colors[0]).hexString
-                let color2 = NSColor(colors[1]).hexString
+                let color1 = colors[0].nsColor.hexString
+                let color2 = colors[1].nsColor.hexString
                 input = "\(color1)\n\(color2)\n\(Int(twist))\n"
             }
         case .bilinear:
-            if colors.count >= 4 {
-                let color1 = NSColor(colors[0]).hexString
-                let color2 = NSColor(colors[1]).hexString
-                let color3 = NSColor(colors[2]).hexString
-                let color4 = NSColor(colors[3]).hexString
-                input = "\(color1)\n\(color2)\n\(color3)\n\(color4)\n"
+            // Ensure we have 4 colors for bilinear gradient
+            let defaultColors: [Color] = [.red, .green, .yellow, .blue]
+            while colors.count < 4 {
+                colors.append(defaultColors[colors.count])
             }
+            let color1 = colors[0].nsColor.hexString
+            let color2 = colors[1].nsColor.hexString
+            let color3 = colors[2].nsColor.hexString
+            let color4 = colors[3].nsColor.hexString
+            input = "\(color1)\n\(color2)\n\(color3)\n\(color4)\n"
         case .plasma:
             input = ""
         case .blurred:
@@ -162,7 +179,6 @@ class WallpaperGenerator: ObservableObject {
             process.waitUntilExit()
             return process.terminationStatus == 0
         } catch {
-            print("Error running canvas script: \(error)")
             return false
         }
     }
@@ -212,10 +228,19 @@ class WallpaperGenerator: ObservableObject {
 
 extension NSColor {
     var hexString: String {
-        let red = Int(round(self.redComponent * 0xFF))
-        let green = Int(round(self.greenComponent * 0xFF))
-        let blue = Int(round(self.blueComponent * 0xFF))
+        guard let rgbColor = self.usingColorSpace(.sRGB) else {
+            return "#000000"
+        }
+        let red = Int(round(rgbColor.redComponent * 0xFF))
+        let green = Int(round(rgbColor.greenComponent * 0xFF))
+        let blue = Int(round(rgbColor.blueComponent * 0xFF))
         return String(format: "#%02X%02X%02X", red, green, blue)
+    }
+}
+
+extension Color {
+    var nsColor: NSColor {
+        return NSColor(self)
     }
 }
 
@@ -516,11 +541,19 @@ struct ContentView: View {
             
             Spacer()
             
-            Button("Preview") {
-                showingPreview = true
+            HStack(spacing: 12) {
+                Button("Open Folder") {
+                    let picturesPath = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
+                    let canvasPath = picturesPath.appendingPathComponent("Canvas")
+                    NSWorkspace.shared.open(canvasPath)
+                }
+                .buttonStyle(.bordered)
+                
+                Button("Preview") {
+                    showingPreview = true
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(wallpaperGenerator.currentWallpaper == nil)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)
