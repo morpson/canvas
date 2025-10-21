@@ -32,7 +32,7 @@ enum WallpaperType: String, CaseIterable {
         case .twisted: return "line.3.crossed.swirl.circle"
         case .bilinear: return "square.grid.4x3.fill"
         case .plasma: return "waveform"
-        case .blurred: return "cloud.fill"
+        case .blurred: return "camera.filters"
         case .random: return "shuffle"
         }
     }
@@ -188,7 +188,7 @@ class WallpaperGenerator: ObservableObject {
     }
     
     func setAsDesktopWallpaper() {
-        guard let wallpaper = currentWallpaper else { return }
+        guard currentWallpaper != nil else { return }
         
         let picturesPath = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
         let canvasPath = picturesPath.appendingPathComponent("Canvas")
@@ -646,19 +646,22 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(alignment: .leading, spacing: 12) {
-                HStack {
+                VStack(alignment: .leading, spacing: 8) {
                     Text("Size:")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Spacer()
-                    Picker("Size", selection: $wallpaperGenerator.size) {
-                        Text("1366x768").tag("1366x768")
-                        Text("1920x1080").tag("1920x1080")
-                        Text("2560x1440").tag("2560x1440")
-                        Text("3840x2160").tag("3840x2160")
+                    
+                    HStack(spacing: 8) {
+                        ForEach(["1366x768", "1920x1080", "2560x1440", "3840x2160"], id: \.self) { size in
+                            Button(size) {
+                                wallpaperGenerator.size = size
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                            .background(wallpaperGenerator.size == size ? Color.blue.opacity(0.2) : Color.clear)
+                            .cornerRadius(6)
+                        }
                     }
-                    .pickerStyle(.menu)
-                    .frame(width: 120)
                 }
                 
                 HStack {

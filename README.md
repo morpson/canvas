@@ -1,52 +1,103 @@
-<!-- Links -->
-[bmac]: https://www.buymeacoffee.com/adi1090x
-[ko-fi]: https://ko-fi.com/adi1090x
-[paypal]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U3VK2SSVQWAPN
-[patreon]: https://www.patreon.com/adi1090x
-
-# Canvas
+# Canvas - Gradient Wallpaper Generator
 
 <p align="left">
-  <img src="https://img.shields.io/badge/Maintained%3F-Yes-green?style=for-the-badge">
-  <img src="https://img.shields.io/github/license/adi1090x/canvas?style=for-the-badge">
-  <img src="https://img.shields.io/github/issues/adi1090x/canvas?color=violet&style=for-the-badge">
-  <img src="https://img.shields.io/github/forks/adi1090x/canvas?color=teal&style=for-the-badge">
-  <img src="https://img.shields.io/github/stars/adi1090x/canvas?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Platform-macOS-blue?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Swift-5.0+-orange?style=for-the-badge">
+  <img src="https://img.shields.io/badge/License-GPL%20v3-blue?style=for-the-badge">
 </p>
 
-A `bash` script to generate and apply different types of **gradient** & **blured** wallpapers.
+A beautiful **macOS native app** and `bash` script to generate and apply different types of **gradient** & **blurred** wallpapers with a modern SwiftUI interface.
 
-![main](wallpapers/main.png)
+> **Based on the original [Canvas](https://github.com/adi1090x/canvas) script by [Aditya Shakya (@adi1090x)](https://github.com/adi1090x)**
 
-### Features
+![Canvas App Screenshot](wallpapers/main.png)
 
-+ Generate a `solid color` wallpaper
-+ Generate a `random blured` wallpaper
-+ Generate linear, radial, bilinear(4 colored) & twisted `gradient` wallpapers
-+ Generate random, twisted or colored `plasma` wallpapers
-+ Allows you to pick colors or fetch colors from `.Xresources` file for wallpaper generation
+## 🖥️ macOS Native App
 
-### Dependencies
+Canvas now includes a native macOS application with:
+- **Modern SwiftUI interface** with glass effect sidebar
+- **Real-time color picker** for all gradient types
+- **Button-based size selection** (1366x768, 1920x1080, 2560x1440, 3840x2160)
+- **Live wallpaper preview** and instant desktop application
+- **macOS 26+ icon support** with Light, Dark, Clear, and Tinted variants
+- **Left-aligned UI** optimized for macOS design guidelines
 
-+ `imagemagick`
-+ `feh`
-+ `xcolor`
-+ `xrandr` (only if you use it on xfce)
+## ✨ Features
 
-### Installation
+### Wallpaper Types:
+- **Solid Color** - Single color backgrounds
+- **Linear Gradient** - Smooth color transitions with adjustable angle
+- **Radial Gradient** - Circular color transitions with shape options
+- **Twisted Gradient** - Swirled gradient effects with twist control
+- **Bilinear Gradient** - Four-corner color blending
+- **Plasma** - Colorful abstract patterns
+- **Blurred Noise** - Random textured backgrounds with blur control
+- **Random** - Surprise wallpapers with random effects
 
-+ Clone this repository...
+### macOS App Features:
+- **Intuitive Interface** - Modern SwiftUI design with glass effects
+- **Live Color Picking** - Real-time color selection for all gradient types
+- **Instant Preview** - See your wallpaper before applying
+- **Multiple Resolutions** - Support for common display sizes
+- **Auto-Apply** - Automatically set as desktop wallpaper
+- **Native Integration** - Proper macOS app bundle with custom icons
+
+## 📋 Requirements
+
+### For macOS App:
+- **macOS 14.0+** (Sonoma or later)
+- **Xcode Command Line Tools** (for building)
+- **ImageMagick** (for wallpaper generation)
+
+### For Command Line Tool:
+- `imagemagick`
+- `feh` (Linux)
+- `xcolor` (Linux)
+- `xrandr` (Linux/XFCE only)
+
+### Install ImageMagick:
 ```bash
-cd $HOME
-git clone https://github.com/adi1090x/canvas.git
+# macOS (Homebrew)
+brew install imagemagick
+
+# Ubuntu/Debian
+sudo apt install imagemagick
+
+# Arch Linux
+sudo pacman -S imagemagick
+```
+
+## 🚀 Installation
+
+### macOS Native App
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/yourusername/canvas.git
 cd canvas
+```
+
+2. **Build the macOS app:**
+```bash
+./build_macos_app.sh
+```
+
+3. **Install to Applications folder:**
+```bash
+cp -R Canvas.app /Applications/
+```
+
+### Command Line Tool
+
+1. **Make the script executable:**
+```bash
 chmod +x canvas
 
-# you can copy this script in bin dir for easy use
+# Optional: Install system-wide
 sudo cp canvas /usr/local/bin
 ```
 
-+ Run the program and choose an option
+2. **Run the program:**
 ```
 $ ./canvas -h
 
@@ -73,237 +124,114 @@ Options:
    -R   --randomize	  Generate a random wallpaper
 ```
 
-### Usage
+## 🎨 Usage Examples
 
-Though you can pick colors, Here's a [list](https://imagemagick.org/www/script/color.php) of all supported color names.
+### macOS App
+Simply launch Canvas.app and use the intuitive interface to:
+1. Select a wallpaper type from the sidebar
+2. Choose colors using the color pickers
+3. Adjust parameters (angle, blur, twist) with sliders
+4. Click "Generate Wallpaper" to create and preview
+5. Set as desktop wallpaper with one click
 
-**1**. Generate random blured wallpaper...
+### Command Line Examples
 
-```
-$ canvas -B
-
-Enter the blur strength (maximum 30): 12
-
-Set as desktop background? (y/n): y
-```
-
-|Blured 1|Blured 2|
-|-|-|
-|![img](wallpapers/1.png)|![img](wallpapers/2.png)|
-
-**2**. Generate a solid color wallpaper...
-
-```
+**Generate a solid color wallpaper:**
+```bash
 $ canvas -s
-
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): p
-
-Pick a color... 
-Generating wallpaper with color: #BA68C8
-
-Set as desktop background? (y/n): y
-
-$ canvas -s
-
 Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): e
-
 Enter the color name or hex (eg: teal, #EBCB8B): #A3BE8C
-
-Set as desktop background? (y/n): y
-
-$ canvas -s
-
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): x
- 
- ██████  ██████  ██████  ██████  ██████  ██████
- ██01██  ██02██  ██03██  ██04██  ██05██  ██06██
- ██████  ██████  ██████  ██████  ██████  ██████
-
- ██████  ██████  ██████  ██████  ██████  ██████
- ██07██  ██08██  ██09██  ██10██  ██11██  ██12██
- ██████  ██████  ██████  ██████  ██████  ██████	 
-
-Enter the color number (without zero): 1
-
-Generating wallpaper with color: #BF616A
-
 Set as desktop background? (y/n): y
 ```
-|Solid - #BA68C8|Solid - #A3BE8C|
-|-|-|
-|![img](wallpapers/3.png)|![img](wallpapers/4.png)|
 
-**3**. Generate a linear gradient wallpaper...
-
-```
+**Generate a linear gradient:**
+```bash
 $ canvas -l
-
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): p
-
-Pick first color...
-Pick second color...
-
-Generating wallpaper with colors: #FB8784, #70D675
-
-Enter the rotation angle (default is 0): 60 
-
-Set as desktop background? (y/n): y
-
-$ canvas -l
-
 Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): e
-
 Enter the colors name or hex (format: color1-color2): orange-purple
-
 Enter the rotation angle (default is 0): 90
-
 Set as desktop background? (y/n): y
 ```
 
-|Linear Gradient 1|Linear Gradient 2|
-|-|-|
-|![img](wallpapers/5.png)|![img](wallpapers/6.png)|
-
-**4**. Generate a radial gradient wallpaper...
-
-```
-$ canvas -r
-
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): p
-
-Pick first color...
-Pick second color...
-
-Generating wallpaper with colors: #DA0B86, #200D74
-
-Shape? [ 1.diagonal | 2.ellipse | 3.maximum | 4.minimum ] (1/2/3/4): 3
-
-Enter the rotation angle (default is 0): 0
-
-Set as desktop background? (y/n): y
-
-$ canvas -r
-
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): e
-
-Enter the colors name or hex (format: color1-color2): red-black
-
-Shape? [ 1.diagonal | 2.ellipse | 3.maximum | 4.minimum ] (1/2/3/4): 2
-
-Enter the rotation angle (default is 0): 20
-
-Set as desktop background? (y/n): y
-```
-
-|Radial Gradient Max|Radial Gradient Ellipse|
-|-|-|
-|![img](wallpapers/7.png)|![img](wallpapers/8.png)|
-
-**5**. Generate a twisted gradient wallpaper...
-
-```
+**Generate a twisted gradient:**
+```bash
 $ canvas -t
-
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): p
-
-Pick first color...
-Pick second color...
-
-Generating wallpaper with colors: #EC7875, #61C766
-
-Enter the twisting amount (maximum 500): 200
-
-Set as desktop background? (y/n): y
-
-$ canvas -t
-
 Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): e
-
 Enter the colors name or hex (format: color1-color2): blue-pink
-
 Enter the twisting amount (maximum 500): 180
-
 Set as desktop background? (y/n): y
 ```
 
-|Twisted Gradient 1|Twisted Gradient 2|
-|-|-|
-|![img](wallpapers/9.png)|![img](wallpapers/10.png)|
+## 🖼️ Gallery
 
-**6**. Generate a bilinear gradient wallpaper...
+|Solid Color|Linear Gradient|Radial Gradient|
+|-|-|-|
+|![img](wallpapers/3.png)|![img](wallpapers/5.png)|![img](wallpapers/7.png)|
 
-```
-$ canvas -b
+|Twisted Gradient|Bilinear Gradient|Plasma|
+|-|-|-|
+|![img](wallpapers/9.png)|![img](wallpapers/11.png)|![img](wallpapers/13.png)|
 
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): p
+## 🔧 Building from Source
 
-Pick first color...
-Pick second color...
-Pick third color...
-Pick fourth color...
+### Prerequisites
+- Xcode Command Line Tools: `xcode-select --install`
+- ImageMagick: `brew install imagemagick`
 
-Generating wallpaper with colors: #FB8784, #70D675, #FFE744 & #51B4FF
+### Build Steps
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/canvas.git
+cd canvas
 
-Smooth or Regular? (s/r): r
+# Build the macOS app
+./build_macos_app.sh
 
-Set as desktop background? (y/n): y
-
-$ canvas -b
-
-Pick Colors or Enter Colors or fetch from .Xresources file? (p/e/x): e
-
-Enter first color (eg: red, #EC7875): teal
-Enter second color (eg: green, #61C766): pink
-Enter third color (eg: yellow, #FDD835): purple
-Enter fourth color (eg: blue, #42A5F5): khaki
-
-Smooth or Regular? (s/r): s
-
-Please wait...
-Set as desktop background? (y/n): y
+# The Canvas.app will be created in the current directory
+# Install to Applications folder (optional)
+cp -R Canvas.app /Applications/
 ```
 
-|Bilinear 1|Bilinear 2|
-|-|-|
-|![img](wallpapers/11.png)|![img](wallpapers/12.png)|
-
-**7**. Generate a plasma wallpaper...
-
-```
-$ canvas -p
-
-Random, Twisted or Custom colors? (r/t/c): r
-
-Set as desktop background? (y/n): n
-
-$ canvas -p
-
-Random, Twisted or Custom colors? (r/t/c): t
-
-Set as desktop background? (y/n): n
-```
-
-|Plasma Normal|Plasma Twisted|
-|-|-|
-|![img](wallpapers/13.png)|![img](wallpapers/14.png)|
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Wallpaper not changing** : If your wallpaper is not changing, then open an issue and show me the output of `echo $DESKTOP_SESSION`.
+1. **Wallpaper not changing on macOS**: 
+   - Ensure you have proper permissions for Desktop & Screen Saver in System Preferences > Security & Privacy
 
-2. **Not working on XFCE** : If this script is not working on xfce, then open the terminal and run `xfconf-query -c xfce4-desktop -m` and change the wallpaper (any) via *xfce4-settings-manager*. <br />
-In terminal, *xfconf-query* will print lines starting with `set:`, which show which properties have been changed, check `screen` & `monitor` values and modify the script accordingly.
-```bash
-105   ## For XFCE
-106   if [[ "$OSTYPE" == "linux"* ]]; then
-107       SCREEN="0"
-108       MONITOR="1"
-109   fi
+2. **Build fails with Swift errors**:
+   - Make sure you have Xcode Command Line Tools installed: `xcode-select --install`
+   - Verify macOS version is 14.0 or later
 
-```
+3. **ImageMagick not found**:
+   - Install via Homebrew: `brew install imagemagick`
+   - Or download from: https://imagemagick.org/script/download.php#macosx
 
-### FYI
+4. **App icon appears oversized**:
+   - This is resolved in the latest build with proper icon sizing
 
-+ In KDE, it changes the wallpaper in all the Activities.
-+ If you can improve it, you're welcome.
-+ Have Fun!
+## 📄 License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+As this project is based on the original Canvas script by Aditya Shakya, which is licensed under GPL v3, this derivative work maintains the same license to comply with GPL requirements.
+
+## 🙏 Acknowledgments
+
+- **Original Canvas script** by [Aditya Shakya (@adi1090x)](https://github.com/adi1090x/canvas)
+- macOS native app implementation with SwiftUI
+- Custom app icons with macOS 26+ appearance support
+
+## 📜 Attribution
+
+This project is based on the original [Canvas wallpaper generator](https://github.com/adi1090x/canvas) by Aditya Shakya. The core wallpaper generation functionality and command-line interface are derived from his work. This macOS native app adds a modern SwiftUI interface while preserving the original script's capabilities.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
