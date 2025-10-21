@@ -10,7 +10,11 @@ A beautiful **macOS native app** and `bash` script to generate and apply differe
 
 > **Based on the original [Canvas](https://github.com/adi1090x/canvas) script by [Aditya Shakya (@adi1090x)](https://github.com/adi1090x)**
 
-![Canvas App Screenshot](wallpapers/main.png)
+<p align="center">
+  <img src="canvas_ico/canvas-macOS-Dark-1024x1024@2x.png" alt="Canvas App Icon" width="128" height="128">
+</p>
+
+![Canvas App Preview](app-preview.png)
 
 ## 🖥️ macOS Native App
 
